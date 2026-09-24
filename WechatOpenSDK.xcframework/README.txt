@@ -1,7 +1,12 @@
 重要!
+SDK2.0.8
+1. 增加助手app跳转公众号主页支持
+
+SDK2.0.7
+1. 增加支付拉起全链路上报（PayReq、JointPayReq 的发起、拉起、回包信息上报）
+
 SDK2.0.6
 1. 将全局CFURLCreateStringByAddingPercentEscapes替换成stringByAddingPercentEncodingWithAllowedCharacters
-2. 增加支付接口 PayReq、JointPayReq 的调用信息上报
 
 SDK2.0.5
 1. 优化XCFramework打包方式
