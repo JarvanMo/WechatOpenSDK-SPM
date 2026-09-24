@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # 用法: ./update_sdk.sh 2.0.8
-# 下载指定版本的微信 OpenSDK XCFramework，替换仓库中的 WechatOpenSDK.xcframework 并提交。
+# 下载指定版本的微信 OpenSDK XCFramework，替换仓库中的 WechatOpenSDK.xcframework，提交、打 tag 并推送。
 set -euo pipefail
 
 VERSION="${1:-}"
@@ -26,6 +26,12 @@ cleanup() {
 trap cleanup EXIT
 
 cd "$ROOT_DIR"
+
+git fetch -q --tags origin
+if git rev-parse -q --verify "refs/tags/$VERSION" >/dev/null; then
+  echo "tag $VERSION 已存在，无需更新" >&2
+  exit 1
+fi
 
 echo "==> 下载 $URL"
 curl -fL --retry 3 -o "$ZIP_FILE" "$URL"
@@ -54,5 +60,9 @@ if git diff --cached --quiet; then
   exit 0
 fi
 git commit -m "framework to $VERSION"
+
+echo "==> 打 tag $VERSION 并推送"
+git tag "$VERSION"
+git push origin HEAD "refs/tags/$VERSION"
 
 echo "==> 完成: 已更新到 $VERSION"
