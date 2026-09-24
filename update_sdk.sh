@@ -27,7 +27,12 @@ trap cleanup EXIT
 
 cd "$ROOT_DIR"
 
+BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 git fetch -q --tags origin
+if ! git merge-base --is-ancestor "origin/$BRANCH" HEAD; then
+  echo "本地 $BRANCH 落后于 origin/$BRANCH，请先 git pull --rebase 再运行" >&2
+  exit 1
+fi
 if git rev-parse -q --verify "refs/tags/$VERSION" >/dev/null; then
   echo "tag $VERSION 已存在，无需更新" >&2
   exit 1
@@ -63,6 +68,6 @@ git commit -m "framework to $VERSION"
 
 echo "==> 打 tag $VERSION 并推送"
 git tag "$VERSION"
-git push origin HEAD "refs/tags/$VERSION"
+git push --atomic origin HEAD "refs/tags/$VERSION"
 
 echo "==> 完成: 已更新到 $VERSION"
